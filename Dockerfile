@@ -34,3 +34,4 @@ RUN echo '<Directory /var/www/html>\n\
 EXPOSE 80
 
 CMD ["apache2-foreground"]
+
