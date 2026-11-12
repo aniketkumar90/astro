@@ -1,36 +1,24 @@
 FROM php:8.2-apache
 
-# Fix Apache MPM conflict — disable event, enable prefork
-RUN a2dismod mpm_event || true && \
-    a2enmod mpm_prefork && \
-    a2enmod rewrite
+# Disable all MPM modules first, then enable only prefork
+RUN apt-get update && apt-get install -y apache2 libapache2-mod-php8.2 2>/dev/null || true; \
+    a2dismod mpm_worker mpm_event 2>/dev/null || true; \
+    a2enmod mpm_prefork rewrite 2>/dev/null || true
 
-# Install PHP MySQL extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Install PHP MySQL + GD extensions
+RUN docker-php-ext-install mysqli pdo pdo_mysql gd
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install gd zip \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy project into Apache web root
+# Copy app files
 COPY . /var/www/html/
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# Remove default Apache index
+RUN rm -f /var/www/html/index.html
 
-# Enable .htaccess overrides
-RUN echo '<Directory /var/www/html>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/astrojyoti.conf \
-    && a2enconf astrojyoti
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+
+# Enable .htaccess in document root
+RUN sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/apache2.conf
 
 EXPOSE 80
 
