@@ -76,36 +76,45 @@ a{text-decoration:none;}
 ════════════════════════════════════════ */
 .hero{
     position:relative;
-    min-height:91vh;
-    overflow:hidden;
+    min-height:88vh;
+    overflow:visible; /* allow wave to bleed out */
     background:#0d0010;
 }
-/* Banner image — mirrored so palm faces right naturally */
+/* Banner image — natural orientation, palm on right */
 .hero-bg{
     position:absolute;inset:0;
     background:url('/astro/assets/banner-hero.jpg') center center/cover no-repeat;
-    transform:scaleX(-1);
+    /* NO mirror — image is correct as-is */
 }
-/* Gradient overlay: heavy dark on left, transparent on right */
+/* Gradient overlay: left-heavy for text readability */
 .hero-ov{
     position:absolute;inset:0;
     background:
         linear-gradient(90deg,
-            rgba(8,0,20,0.92) 0%,
-            rgba(8,0,20,0.80) 38%,
-            rgba(8,0,20,0.42) 60%,
-            rgba(8,0,20,0.08) 80%,
+            rgba(6,0,16,0.90) 0%,
+            rgba(6,0,16,0.75) 35%,
+            rgba(6,0,16,0.35) 58%,
+            rgba(6,0,16,0.05) 76%,
             transparent 100%),
         linear-gradient(180deg,
-            rgba(0,0,0,0.25) 0%,
-            transparent 30%,
-            transparent 70%,
-            rgba(0,0,0,0.4) 100%);
+            rgba(0,0,0,0.20) 0%,
+            transparent 25%,
+            transparent 65%,
+            rgba(0,0,0,0.30) 100%);
 }
+/* ── WAVE bottom transition into cream services ── */
+.hero-wave{
+    position:absolute;
+    bottom:-2px; left:0; right:0;
+    z-index:20;
+    line-height:0;
+}
+.hero-wave svg{ display:block; width:100%; height:80px; }
 .hero-wrap{
     position:relative;z-index:10;
     max-width:1200px;margin:0 auto;padding:0 24px;
-    display:flex;align-items:center;min-height:91vh;
+    display:flex;align-items:center;min-height:88vh;
+    padding-bottom:80px; /* make space for wave */
 }
 .hero-content{max-width:560px;}
 /* Badge */
@@ -151,6 +160,7 @@ a{text-decoration:none;}
     margin-left:-10px;position:relative;
 }
 .avs .av:first-child{margin-left:0;}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 .trust-txt{font-size:12.5px;color:rgba(255,255,255,0.7);}
 .s5{display:flex;gap:2px;margin-bottom:3px;}
 .s5 i{color:#D4A017;font-size:11.5px;}
@@ -158,7 +168,7 @@ a{text-decoration:none;}
 /* ════════════════════════════════════════
    ③ SERVICES — LIGHT CREAM
 ════════════════════════════════════════ */
-.srv-sec{background:#faebd7;padding:68px 0;}
+.srv-sec{background:#faebd7;padding:20px 0 68px;}
 /* gold divider lines */
 .divider-line{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:6px;}
 .divider-line .dl{height:1px;flex:1;max-width:100px;background:linear-gradient(to right,transparent,#c8a04a);}
@@ -595,10 +605,25 @@ a{text-decoration:none;}
             <div class="trust-row">
                 <div class="avs">
                     <?php
-                    $avc=['#2d1057','#3d1575','#4a1a8a','#1a0a35','#5a2a9a'];
-                    $avl=['P','S','A','R','M'];
-                    foreach($avl as $i=>$l): ?>
-                    <div class="av" style="background:<?= $avc[$i] ?>;z-index:<?= 5-$i ?>;"><?= $l ?></div>
+                    // Try using real asset photos; fallback to initials
+                    $avatarData=[
+                        ['img'=>'/astro/assets/WhatsApp Image 2026-11-06 1at 2.39.56 PM.jpeg','init'=>'P','bg'=>'#2d1057'],
+                        ['img'=>'/astro/assets/WhatsApp Image 2026-11-06 2at 2.39.56 PM.jpeg','init'=>'S','bg'=>'#3d1575'],
+                        ['img'=>'/astro/assets/WhatsApp Image 2026-11-06 3at 2.39.56 PM.jpeg','init'=>'A','bg'=>'#4a1a8a'],
+                        ['img'=>'','init'=>'R','bg'=>'#1a0a35'],
+                        ['img'=>'','init'=>'M','bg'=>'#5a2a9a'],
+                    ];
+                    foreach($avatarData as $i=>$av): ?>
+                    <div class="av" style="background:<?= $av['bg'] ?>;z-index:<?= 5-$i ?>;">
+                        <?php if(!empty($av['img'])): ?>
+                        <img src="<?= $av['img'] ?>" alt="client"
+                             style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <span style="display:none;font-size:11px;font-weight:700;color:#D4A017;"><?= $av['init'] ?></span>
+                        <?php else: ?>
+                        <span style="font-size:11px;font-weight:700;color:#D4A017;"><?= $av['init'] ?></span>
+                        <?php endif; ?>
+                    </div>
                     <?php endforeach; ?>
                 </div>
                 <div>
@@ -609,20 +634,32 @@ a{text-decoration:none;}
 
         </div>
     </div>
+
+    <!-- ── BOTTOM WAVE TRANSITION ── -->
+    <div class="hero-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,80 L0,40 Q180,0 360,30 Q540,60 720,20 Q900,-10 1080,30 Q1260,60 1440,15 L1440,80 Z" fill="#faebd7"/>
+        </svg>
+    </div>
 </section>
 
 <!-- ══════════════════════════════════════
      ③ SERVICES — LIGHT CREAM
 ══════════════════════════════════════ -->
-<section class="srv-sec">
+<section class="srv-sec" style="margin-top:-2px;">
     <div class="container" style="text-align:center;">
-        <!-- Divider line -->
-        <div class="divider-line" style="max-width:500px;margin:0 auto 14px;">
-            <div class="dl"></div><div class="dot"></div>
+        <!-- Pill + divider matching reference exactly -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:14px;max-width:600px;margin-left:auto;margin-right:auto;">
+            <!-- Left gold line -->
+            <div style="flex:1;height:1px;background:linear-gradient(to right,transparent,#c8a04a);max-width:120px;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#c8a04a;margin:0 4px;flex-shrink:0;"></div>
+            <!-- Services Pill -->
             <div class="srv-pill"><i class="fas fa-star"></i>&nbsp;Our Services</div>
-            <div class="dot"></div><div class="dl r"></div>
+            <!-- Right gold dot + line -->
+            <div style="width:8px;height:8px;border-radius:50%;background:#c8a04a;margin:0 4px;flex-shrink:0;"></div>
+            <div style="flex:1;height:1px;background:linear-gradient(to left,transparent,#c8a04a);max-width:120px;"></div>
         </div>
-        <div class="sec-title-dark">Choose from our specialized astrology and palmistry services</div>
+        <div class="sec-title-dark" style="font-size:0.95rem;color:rgba(45,0,96,0.6);font-family:'Inter',sans-serif;font-weight:400;">Choose from our specialized astrology and palmistry services</div>
     </div>
 
     <div class="container">
