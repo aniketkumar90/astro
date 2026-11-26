@@ -25,11 +25,27 @@ a{text-decoration:none;}
    ① NAVBAR — WHITE
 ════════════════════════════════════════ */
 .navbar{
-    background:#fff;
-    border-bottom:1px solid #ede5d0;
-    position:sticky;top:0;z-index:1000;
-    box-shadow:0 2px 12px rgba(0,0,0,0.07);
+    background: transparent;
+    border-bottom: 1px solid rgba(212,160,23,0.15);
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    transition: background 0.4s, box-shadow 0.4s;
 }
+/* Scrolled state — becomes solid white */
+.navbar.scrolled{
+    background: rgba(255,255,255,0.97);
+    border-bottom: 1px solid #ede5d0;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    position: fixed;
+}
+.navbar.scrolled .nav-links a      { color:#2a2a2a; }
+.navbar.scrolled .nav-links a:hover{ color:#c89010; }
+.navbar.scrolled .logo-name        { color:#c89010; }
+.navbar.scrolled .logo-tag         { color:#a07010; }
+.navbar.scrolled .mob-btn          { color:#c89010; }
+.navbar.scrolled .nav-btn          { color:#c89010; border-color:#c89010; }
+.navbar.scrolled .mob-nav          { background:#fff; }
 .nav-inner{
     max-width:1200px;margin:0 auto;padding:0 24px;
     display:flex;align-items:center;justify-content:space-between;height:70px;
@@ -42,30 +58,35 @@ a{text-decoration:none;}
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 14px rgba(212,160,23,0.5);
 }
-.logo-name{font-family:'Cinzel',serif;font-size:1.12rem;font-weight:700;color:#c89010;letter-spacing:0.03em;line-height:1.1;}
-.logo-tag {font-family:'Playfair Display',serif;font-size:9.5px;font-style:italic;color:#a07010;letter-spacing:0.07em;}
-/* Nav links */
+/* Transparent state — white/gold text on dark banner */
+.logo-name{font-family:'Cinzel',serif;font-size:1.12rem;font-weight:700;color:#D4A017;letter-spacing:0.03em;line-height:1.1;}
+.logo-tag {font-family:'Playfair Display',serif;font-size:9.5px;font-style:italic;color:rgba(212,160,23,0.75);letter-spacing:0.07em;}
+/* Nav links — white on dark hero */
 .nav-links{display:flex;align-items:center;gap:22px;}
-.nav-links a{font-size:0.875rem;font-weight:500;color:#2a2a2a;transition:color 0.2s;}
-.nav-links a:hover{color:#c89010;}
+.nav-links a{font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.88);transition:color 0.2s;}
+.nav-links a:hover{color:#D4A017;}
 .nav-links a.active{
     background:#D4A017;color:#fff!important;
     padding:7px 20px;border-radius:50px;font-weight:600;
 }
 .nav-links .has-arrow{display:flex;align-items:center;gap:4px;}
-/* Book btn */
+/* Book btn — gold outline, white text */
 .nav-btn{
     font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;
-    color:#c89010;border:1.5px solid #c89010;background:transparent;
+    color:#D4A017;border:1.5px solid #D4A017;background:transparent;
     padding:9px 18px;border-radius:50px;white-space:nowrap;
     display:inline-flex;align-items:center;gap:7px;transition:all 0.25s;
 }
-.nav-btn:hover{background:rgba(212,160,23,0.08);}
+.nav-btn:hover{background:rgba(212,160,23,0.15);}
 /* Mobile */
-.mob-btn{display:none;background:none;border:none;color:#c89010;font-size:1.4rem;cursor:pointer;}
-.mob-nav{display:none;flex-direction:column;gap:10px;padding:14px 24px 18px;background:#fff;border-top:1px solid #ede5d0;}
-.mob-nav a{color:#333;font-size:0.95rem;padding:4px 0;font-weight:500;}
-.mob-nav a.active{color:#c89010;font-weight:700;}
+.mob-btn{display:none;background:none;border:none;color:#D4A017;font-size:1.4rem;cursor:pointer;}
+.mob-nav{
+    display:none;flex-direction:column;gap:10px;padding:14px 24px 18px;
+    background:rgba(10,0,25,0.96);border-top:1px solid rgba(212,160,23,0.2);
+}
+.mob-nav a{color:rgba(255,255,255,0.85);font-size:0.95rem;padding:4px 0;font-weight:500;}
+.mob-nav a:hover{color:#D4A017;}
+.mob-nav a.active{color:#D4A017;font-weight:700;}
 @media(max-width:1024px){
     .nav-links,.nav-btn{display:none;}
     .mob-btn{display:block;}
@@ -76,8 +97,8 @@ a{text-decoration:none;}
 ════════════════════════════════════════ */
 .hero{
     position:relative;
-    min-height:88vh;
-    overflow:visible; /* allow wave to bleed out */
+    min-height:100vh; /* full viewport since navbar is now absolute over it */
+    overflow:visible;
     background:#0d0010;
 }
 /* Banner image — natural orientation, palm on right */
@@ -113,8 +134,9 @@ a{text-decoration:none;}
 .hero-wrap{
     position:relative;z-index:10;
     max-width:1200px;margin:0 auto;padding:0 24px;
-    display:flex;align-items:center;min-height:88vh;
-    padding-bottom:80px; /* make space for wave */
+    display:flex;align-items:center;min-height:100vh;
+    padding-top:70px;    /* navbar height */
+    padding-bottom:90px; /* wave height */
 }
 .hero-content{max-width:560px;}
 /* Badge */
@@ -563,7 +585,17 @@ a{text-decoration:none;}
         </a>
     </div>
 </nav>
-<script>document.getElementById('mobBtn').addEventListener('click',function(){var m=document.getElementById('mobNav');m.style.display=m.style.display==='flex'?'none':'flex';});</script>
+<script>document.getElementById('mobBtn').addEventListener('click',function(){var m=document.getElementById('mobNav');m.style.display=m.style.display==='flex'?'none':'flex';});
+// Navbar scroll: transparent → solid white
+window.addEventListener('scroll',function(){
+    var nav=document.querySelector('.navbar');
+    if(window.scrollY>60){
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
+    }
+});
+</script>
 
 <!-- ══════════════════════════════════════
      ② HERO — BANNER IMAGE BACKGROUND
